@@ -1,15 +1,284 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TS + HTML + CSS</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <title>MAGI SYSTEM // PROCESO DE ATENCIÓN AL CLIENTE</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1 id="title">Hello</h1>
-    <button id="btn">Click me</button>
+    <!-- ═══════════════════════════════════════════
+       HEADER — NERV COMMAND BAR
+       ═══════════════════════════════════════════ -->
+    <header class="header">
+      <div class="header-left">
+        <div class="nerv-logo">NERV</div>
+        <div class="header-title">
+          <div>MAGI SYSTEM // SUBSISTEMA DE CONTROL</div>
+          <div>
+            <span>PROCESO DE ATENCIÓN AL CLIENTE</span> // UNIDAD GASTRONÓMICA
+            Nº3
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div id="alertBanner" class="alert-banner" style="display: none">
+          ⚠ COCINA ACTIVA
+        </div>
+        <div class="sys-clock" id="clock">00:00:00</div>
+      </div>
+    </header>
 
-    <script type="module" src="./js/index.js"></script>
+    <!-- Floating warning overlays (kitchen / cashier alerts) -->
+    <div class="warning-overlay" id="warningOverlay"></div>
+
+    <!-- ═══════════════════════════════════════════
+       MAIN GRID
+       ═══════════════════════════════════════════ -->
+    <div class="main">
+      <!-- ───────────────────────────────────────
+         LEFT PANEL — ORDER TERMINAL
+         ─────────────────────────────────────── -->
+      <aside class="panel left-panel">
+        <div class="panel-title">
+          <span class="dot cyan"></span>TERMINAL DE SOLICITUD
+        </div>
+
+        <div class="panel-content" style="flex: 1; overflow-y: auto">
+          <!-- Customer / table identifier -->
+          <div class="customer-input">
+            <input
+              type="text"
+              id="customerName"
+              placeholder="ID CLIENTE / MESA..."
+              maxlength="12"
+            />
+          </div>
+
+          <!-- Menu: Sandías -->
+          <section class="menu-section">
+            <div class="menu-section-title">
+              🍉 SANDÍAS — SELECCIÓN PRINCIPAL
+            </div>
+            <div id="menuSandias"></div>
+          </section>
+
+          <!-- Menu: Bebidas -->
+          <section class="menu-section">
+            <div class="menu-section-title">🥤 BEBIDAS</div>
+            <div id="menuBebidas"></div>
+          </section>
+
+          <!-- Menu: Acompañamientos -->
+          <section class="menu-section">
+            <div class="menu-section-title">🍟 ACOMPAÑAMIENTOS</div>
+            <div id="menuAcomp"></div>
+          </section>
+        </div>
+        <!-- /panel-content -->
+
+        <!-- Order summary + submit -->
+        <div class="order-summary">
+          <div class="order-summary-title">◈ RESUMEN DE SOLICITUD</div>
+          <div id="orderLines">
+            <div style="font-size: 10px; color: var(--green-dark)">
+              // sin items seleccionados
+            </div>
+          </div>
+          <div class="order-total">
+            <span>TOTAL:</span>
+            <span id="orderTotal">S/ 0.00</span>
+          </div>
+          <button class="submit-btn" id="submitBtn" onclick="submitOrder()">
+            ⟫ ENVIAR SOLICITUD AL SISTEMA ⟪
+          </button>
+        </div>
+      </aside>
+      <!-- /left-panel -->
+
+      <!-- ───────────────────────────────────────
+         CENTER TOP — SWIMLANE MONITOR
+         ─────────────────────────────────────── -->
+      <div class="center-top" id="swimlaneArea">
+        <div class="swimlane">
+          <div class="swimlane-label cliente">◈ CLIENTE</div>
+          <div class="swimlane-body" id="lane-CLIENTE"></div>
+        </div>
+
+        <div class="swimlane">
+          <div class="swimlane-label mozo">◈ MOZO</div>
+          <div class="swimlane-body" id="lane-MOZO"></div>
+        </div>
+
+        <div class="swimlane">
+          <div class="swimlane-label cocina">◈ COCINA</div>
+          <div class="swimlane-body" id="lane-COCINA"></div>
+        </div>
+
+        <div class="swimlane">
+          <div class="swimlane-label caja">◈ CAJA</div>
+          <div class="swimlane-body" id="lane-CAJA"></div>
+        </div>
+      </div>
+      <!-- /center-top -->
+
+      <!-- ───────────────────────────────────────
+         CENTER BOTTOM — ACTIVE ORDERS COMMAND ARRAY
+         ─────────────────────────────────────── -->
+      <section class="panel center-bottom">
+        <div class="panel-title">
+          <span class="dot orange"></span>LISTA DE ÓRDENES ACTIVAS — COMMAND
+          ARRAY
+        </div>
+        <div class="panel-content" style="height: calc(100% - 32px)">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>CLIENTE</th>
+                <th>ITEMS</th>
+                <th>ESTADO</th>
+                <th>LANE</th>
+                <th>SYNC</th>
+                <th>TIEMPO</th>
+                <th>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody">
+              <tr>
+                <td colspan="8">
+                  <div class="empty-state">
+                    // SISTEMA EN ESPERA — SIN ÓRDENES ACTIVAS
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!-- /center-bottom -->
+
+      <!-- ───────────────────────────────────────
+         RIGHT PANEL — MAGI + METRICS
+         ─────────────────────────────────────── -->
+      <aside class="right-panel">
+        <!-- MAGI System status -->
+        <div class="magi-block">
+          <div class="magi-block-title">
+            ⬡ SISTEMA MAGI — CONTROL DISTRIBUIDO
+          </div>
+          <div class="magi-name">
+            <span class="magi-label">MELCHIOR-1</span>
+            <span class="magi-status ok" id="magi1">NOMINAL</span>
+          </div>
+          <div class="magi-name">
+            <span class="magi-label">BALTHASAR-2</span>
+            <span class="magi-status ok" id="magi2">NOMINAL</span>
+          </div>
+          <div class="magi-name">
+            <span class="magi-label">CASPAR-3</span>
+            <span class="magi-status ok" id="magi3">NOMINAL</span>
+          </div>
+        </div>
+
+        <!-- Radar tracker -->
+        <div class="panel" style="padding: 10px">
+          <div
+            class="panel-title"
+            style="margin: -10px -10px 8px; padding: 6px 10px"
+          >
+            <span class="dot red"></span>ORDER TRACKER RADAR
+          </div>
+          <div class="radar-wrap">
+            <div class="radar-circle"></div>
+            <div class="radar-circle"></div>
+            <div class="radar-circle"></div>
+            <div class="radar-cross"></div>
+            <div class="radar-line"></div>
+            <div id="radarBlips"></div>
+          </div>
+        </div>
+
+        <!-- Lane sync bars -->
+        <div class="sync-section">
+          <div class="sync-title">◈ SINCRONIZACIÓN DE LANES</div>
+
+          <div class="sync-row">
+            <span class="sync-label">CLIENTE</span>
+            <div class="sync-bar-track">
+              <div class="sync-bar-fill lane-c" id="sync-c"></div>
+            </div>
+            <span class="sync-pct" id="pct-c">0%</span>
+          </div>
+
+          <div class="sync-row">
+            <span class="sync-label">MOZO</span>
+            <div class="sync-bar-track">
+              <div class="sync-bar-fill lane-m" id="sync-m"></div>
+            </div>
+            <span class="sync-pct" id="pct-m">0%</span>
+          </div>
+
+          <div class="sync-row">
+            <span class="sync-label">COCINA</span>
+            <div class="sync-bar-track">
+              <div class="sync-bar-fill lane-k" id="sync-k"></div>
+            </div>
+            <span class="sync-pct" id="pct-k">0%</span>
+          </div>
+
+          <div class="sync-row">
+            <span class="sync-label">CAJA</span>
+            <div class="sync-bar-track">
+              <div class="sync-bar-fill lane-x" id="sync-x"></div>
+            </div>
+            <span class="sync-pct" id="pct-x">0%</span>
+          </div>
+        </div>
+
+        <!-- Operational stats -->
+        <div class="panel" style="padding: 10px">
+          <div
+            class="panel-title"
+            style="margin: -10px -10px 8px; padding: 6px 10px"
+          >
+            <span class="dot green"></span>ESTADÍSTICAS DE OPERACIÓN
+          </div>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-num green" id="statActive">0</span>
+              <span class="stat-label">ACTIVAS</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num cyan" id="statCompleted">0</span>
+              <span class="stat-label">COMPLETADAS</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num orange" id="statKitchen">0</span>
+              <span class="stat-label">EN COCINA</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num red" id="statRevenue">0</span>
+              <span class="stat-label">INGRESOS S/</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- System log -->
+        <div class="panel" style="padding: 10px; flex: 1">
+          <div
+            class="panel-title"
+            style="margin: -10px -10px 8px; padding: 6px 10px"
+          >
+            <span class="dot cyan"></span>SYSTEM LOG
+          </div>
+          <div class="log-box" id="logBox"></div>
+        </div>
+      </aside>
+      <!-- /right-panel -->
+    </div>
+    <!-- /main -->
+
+    <script src="dist/index.js"></script>
   </body>
 </html>
