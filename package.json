@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsc && npx esbuild src/index.ts --bundle --outfile=public/dist/bundle.js --format=esm",
     "dev": "tsc --watch",
-    "start": "node dist/index.js"
+    "start": "npm run build && npx http-server public -o"
   },
   "repository": {
     "type": "git",

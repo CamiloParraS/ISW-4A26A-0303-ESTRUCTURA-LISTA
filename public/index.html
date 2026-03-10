@@ -7,9 +7,6 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- ═══════════════════════════════════════════
-       HEADER — NERV COMMAND BAR
-       ═══════════════════════════════════════════ -->
     <header class="header">
       <div class="header-left">
         <div class="nerv-logo">NERV</div>
@@ -29,23 +26,15 @@
       </div>
     </header>
 
-    <!-- Floating warning overlays (kitchen / cashier alerts) -->
     <div class="warning-overlay" id="warningOverlay"></div>
 
-    <!-- ═══════════════════════════════════════════
-       MAIN GRID
-       ═══════════════════════════════════════════ -->
     <div class="main">
-      <!-- ───────────────────────────────────────
-         LEFT PANEL — ORDER TERMINAL
-         ─────────────────────────────────────── -->
       <aside class="panel left-panel">
         <div class="panel-title">
           <span class="dot cyan"></span>TERMINAL DE SOLICITUD
         </div>
 
         <div class="panel-content" style="flex: 1; overflow-y: auto">
-          <!-- Customer / table identifier -->
           <div class="customer-input">
             <input
               type="text"
@@ -55,7 +44,6 @@
             />
           </div>
 
-          <!-- Menu: Sandías -->
           <section class="menu-section">
             <div class="menu-section-title">
               🍉 SANDÍAS — SELECCIÓN PRINCIPAL
@@ -63,21 +51,17 @@
             <div id="menuSandias"></div>
           </section>
 
-          <!-- Menu: Bebidas -->
           <section class="menu-section">
             <div class="menu-section-title">🥤 BEBIDAS</div>
             <div id="menuBebidas"></div>
           </section>
 
-          <!-- Menu: Acompañamientos -->
           <section class="menu-section">
             <div class="menu-section-title">🍟 ACOMPAÑAMIENTOS</div>
             <div id="menuAcomp"></div>
           </section>
         </div>
-        <!-- /panel-content -->
 
-        <!-- Order summary + submit -->
         <div class="order-summary">
           <div class="order-summary-title">◈ RESUMEN DE SOLICITUD</div>
           <div id="orderLines">
@@ -94,11 +78,6 @@
           </button>
         </div>
       </aside>
-      <!-- /left-panel -->
-
-      <!-- ───────────────────────────────────────
-         CENTER TOP — SWIMLANE MONITOR
-         ─────────────────────────────────────── -->
       <div class="center-top" id="swimlaneArea">
         <div class="swimlane">
           <div class="swimlane-label cliente">◈ CLIENTE</div>
@@ -120,11 +99,7 @@
           <div class="swimlane-body" id="lane-CAJA"></div>
         </div>
       </div>
-      <!-- /center-top -->
 
-      <!-- ───────────────────────────────────────
-         CENTER BOTTOM — ACTIVE ORDERS COMMAND ARRAY
-         ─────────────────────────────────────── -->
       <section class="panel center-bottom">
         <div class="panel-title">
           <span class="dot orange"></span>LISTA DE ÓRDENES ACTIVAS — COMMAND
@@ -147,22 +122,14 @@
             <tbody id="ordersBody">
               <tr>
                 <td colspan="8">
-                  <div class="empty-state">
-                    // SISTEMA EN ESPERA — SIN ÓRDENES ACTIVAS
-                  </div>
+                  <div class="empty-state"></div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
-      <!-- /center-bottom -->
-
-      <!-- ───────────────────────────────────────
-         RIGHT PANEL — MAGI + METRICS
-         ─────────────────────────────────────── -->
       <aside class="right-panel">
-        <!-- MAGI System status -->
         <div class="magi-block">
           <div class="magi-block-title">
             ⬡ SISTEMA MAGI — CONTROL DISTRIBUIDO
@@ -181,7 +148,6 @@
           </div>
         </div>
 
-        <!-- Radar tracker -->
         <div class="panel" style="padding: 10px">
           <div
             class="panel-title"
@@ -199,7 +165,6 @@
           </div>
         </div>
 
-        <!-- Lane sync bars -->
         <div class="sync-section">
           <div class="sync-title">◈ SINCRONIZACIÓN DE LANES</div>
 
@@ -236,7 +201,6 @@
           </div>
         </div>
 
-        <!-- Operational stats -->
         <div class="panel" style="padding: 10px">
           <div
             class="panel-title"
@@ -264,7 +228,6 @@
           </div>
         </div>
 
-        <!-- System log -->
         <div class="panel" style="padding: 10px; flex: 1">
           <div
             class="panel-title"
@@ -275,10 +238,8 @@
           <div class="log-box" id="logBox"></div>
         </div>
       </aside>
-      <!-- /right-panel -->
     </div>
-    <!-- /main -->
 
-    <script src="dist/index.js"></script>
+    <script type="module" src="dist/bundle.js"></script>
   </body>
 </html>
